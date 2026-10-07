@@ -9,12 +9,12 @@ double Field::getMaxY() const{return maxY;}
 double Field::getLebarGawang() const{return lebarGawang;}
 
 //mengecek apakah posisi di
-bool Field::isInside(const Vector2& position) const{
+bool Field::isInside(const Vector2& posisi) const{
     double goalMinY = -lebarGawang / 2.0;
     double goalMaxY = lebarGawang / 2.0;
     return {
-        position.x == maxX &&
-        position.y >= goalMinY &&
-        position.y <= goalMaxY
+        posisi.x == maxX &&
+        posisi.y >= goalMinY &&
+        posisi.y <= goalMaxY
     };
 }

@@ -26,8 +26,8 @@ public:
     //mengambil nilai lebarGawang
     double getLebarGawang() const;
     //mengecek apakah suatu titik di lapangan atau tidak
-    bool isInside(const Vector2& position) const;
+    bool isInside(const Vector2& posisi) const;
     //mengecek apakah bola di gawang atau tidak
-    bool isInsideGoal(const Vector2& position) const;
+    bool isInsideGoal(const Vector2& posisi) const;
 };
 #endif

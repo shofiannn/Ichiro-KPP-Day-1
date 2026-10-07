@@ -14,7 +14,7 @@ double sudut(const Vector2& a, const Vector2& b){
     return normalisasiSudut(sudut);
 }
 
-double normalsasiSudut(double sudut){
+double normalisasiSudut(double sudut){
     if(sudut > 180.0) sudut -= 360.0;
     else if(sudut < -180.0) sudut += 360.0;
     return sudut;

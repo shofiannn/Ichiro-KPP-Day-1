@@ -131,13 +131,7 @@ Proyek ini belum menyertakan unit-test otomatis. Skenario berikut adalah pemerik
 | 8 | Batas tick | Atur `max_ticks` ke nilai kecil yang positif | Simulasi berhenti ketika batas tick tercapai jika gol belum terjadi. |
 | 9 | Aksi robot tidak valid | Uji kondisi yang membuat gerakan robot akan melewati batas lapangan | `InvalidActionException` ditangani oleh simulator dan pesan kesalahan ditampilkan. |
 
-## 8. Batasan yang diketahui
-
-- Ukuran lapangan dan gawang di `Field.h` masih konstan; tiga parameter ukuran di `config.txt` belum mengubah objek `Field`.
-- Tidak ada target CMake atau `CMakeLists.txt` pada versi ini; kompilasi resmi yang tersedia dalam dokumentasi adalah dengan g++.
-- Skenario di bagian 7 adalah rencana uji manual, bukan bukti bahwa seluruh skenario sudah dijalankan otomatis.
-
-## 9. Pernyataan penggunaan AI
+## 8. Pernyataan penggunaan AI
 
 Bantuan AI digunakan dalam proses peninjauan kode dan penyusunan dokumentasi untuk tugas ini, termasuk pemeriksaan pesan kompilasi, perapian README, dan penyusunan diagram kelas berdasarkan struktur source code yang tersedia.
 

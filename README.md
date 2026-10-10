@@ -78,8 +78,6 @@ ball_y=-1.0
 
 ## 5. Arsitektur OOP
 
-Lihat diagram kelas pada [`CLASS_DIAGRAM.md`](CLASS_DIAGRAM.md). Secara ringkas:
-
 - `Robot` adalah kelas abstrak dasar untuk robot yang menyimpan posisi, arah, dan kecepatan.
 - `Striker` mewarisi `Robot` dan mengelola `Sensor` serta state aktif melalui `std::unique_ptr<StrikerState>`.
 - `StrikerState` adalah kelas dasar abstrak untuk State Pattern. Implementasinya adalah `SearchState`, `ApproachState`, `AlignState`, dan `KickState`.

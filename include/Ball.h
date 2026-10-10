@@ -2,30 +2,32 @@
 #define BALL_H
 
 #include "Vector2.h"
+#include "Field.h"
 
 class Ball {
 private:
     Vector2 posisiBola;
-    Vector2 kecepatanBola;
+    Vector2 arahGerak;
+    int kecepatanBola;
     bool moving;
 
 public:
     Ball();
-    Ball(const Vector2& posisiAwalBola);
+    explicit Ball(const Vector2& posisiAwalBola);
 
     Vector2 getPosisi() const;
-    Vector2 getKecepatan() const;
-
+    int getKecepatan() const;
     bool isMoving() const;
-
-    //mengubah posisi bola
     void setPosisi(const Vector2& posisiBaru);
 
+    //mengarahkan tendangan ke gawang
+    void kick(const Vector2& target);
 
-    void kick(const Vector2& arahTendangan);
+    //memeriksa tiap perpindahan bola apakah gol atau bola keluar lapangan
+    std::string update(const Field& field);
 
-    //mengubah posisi bola berdasarkan velocity
-    void update();
+    //nge respawn bola ke tengah lapangan
+    void respawn(const Field& field);
 };
 
 #endif

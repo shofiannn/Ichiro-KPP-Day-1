@@ -26,3 +26,19 @@ Vector2 normalisasiVektor(const Vector2& v) {
     if (panjang == 0.0) return {0.0, 0.0};
     return {v.x / panjang, v.y / panjang};
 }
+#include <cmath> // [BARU]
+// [BARU] cos/sin dibulatkan (robot hanya menghadap kelipatan 90 derajat)
+Vector2 vektorArah(double derajat) {
+    const double rad = derajat * 3.14159265358979323846 / 180.0;
+    return {std::round(std::cos(rad)), std::round(std::sin(rad))};
+}
+// [BARU] selisih posisi dibagi 0.5 m lalu dibulatkan
+void selisihPetak(const Vector2& a, const Vector2& b, int& dx, int& dy) {
+    dx = static_cast<int>(std::lround((b.x - a.x) / UKURAN_PETAK));
+    dy = static_cast<int>(std::lround((b.y - a.y) / UKURAN_PETAK));
+}
+// [BARU] sama jika selisihnya 0 petak
+bool samaPetak(const Vector2& a, const Vector2& b) {
+    int dx, dy; selisihPetak(a, b, dx, dy);
+    return dx == 0 && dy == 0;
+}

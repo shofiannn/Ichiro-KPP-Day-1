@@ -17,77 +17,35 @@ void Ball::setPosisi(const Vector2& posisiBaru) {
 }
 
 void Ball::kick(const Vector2& target) {
-    //menghitung arah bola
-    arahGerak = normalisasiVektor({target.x - posisiBola.x, target.y - posisiBola.y});
-
-    //menghentikan bola jika target berada tepat di posisi bola
-    if (arahGerak.x == 0.0 && arahGerak.y == 0.0) {
-        moving = false;
-        kecepatanBola = 0;
-        return;
-    }
-
-    //mengatur kecepatan awal bola
-    kecepatanBola = 3;
+    //arah dibuat berupa langkah petak (-1/0/1) supaya bola lurus atau diagonal 45 derajat di grid
+    const double dx = target.x - posisiBola.x, dy = target.y - posisiBola.y;
+    arahGerak = {static_cast<double>((dx > 0) - (dx < 0)), static_cast<double>((dy > 0) - (dy < 0))};
+    if (arahGerak.x == 0.0 && arahGerak.y == 0.0) { moving = false; kecepatanBola = 0; return; }
+    kecepatanBola = 3; // 3 m/tick
     moving = true;
 }
-
 std::string Ball::update(const Field& field) {
-    //menghentikan bola jika kecepatannya habis
-    if (!moving || kecepatanBola <= 0) {
-        moving = false;
-        kecepatanBola = 0;
-        return "Bola berhenti.";
-    }
-
-    //menyimpan posisi lama bola
-    const Vector2 lama = posisiBola;
-
-    //memperbarui posisi bola berdasarkan arah gerak dan kecepatannya
-    posisiBola.x += arahGerak.x * kecepatanBola;
-    posisiBola.y += arahGerak.y * kecepatanBola;
-
-    //memeriksa apakah lintasan bola melewati garis gawang
-    if (arahGerak.x > 0.0 && lama.x <= field.getMaxX() && posisiBola.x >= field.getMaxX()) {
-        //menghitung posisi perpotongan bola dengan garis gawang
-        const double t = (field.getMaxX() - lama.x) / (posisiBola.x - lama.x);
-        const double ySaatGawang = lama.y + t * (posisiBola.y - lama.y);
-
-        //memeriksa apakah bola melewati bukaan gawang
-        if (ySaatGawang >= field.getGoalMinY() && ySaatGawang <= field.getGoalMaxY()) {
-            //Memindahkan bola sedikit melewati garis gawang
-            posisiBola = {field.getMaxX() + 0.01, ySaatGawang};
-
-            //menghentikan bola setelah berhasil mencetak gol
-            moving = false;
-            kecepatanBola = 0;
+    if (!moving || kecepatanBola <= 0) { moving = false; kecepatanBola = 0; return "Bola berhenti."; }
+    const int jumlahPetak = kecepatanBola * 2;                 // 3 m = 6 petak, 2 m = 4 petak, 1 m = 2 petak
+    for (int i = 0; i < jumlahPetak; ++i) {
+        posisiBola.x += arahGerak.x * UKURAN_PETAK;           
+        posisiBola.y += arahGerak.y * UKURAN_PETAK;
+        if (field.isInsideGoal(posisiBola)) {                 
+            moving = false; kecepatanBola = 0;
             return "GOOOL! Bola melewati bukaan gawang.";
         }
+        if (field.isOutOfBounds(posisiBola)) {                 // keluar lapangan -> RESPAWN
+            respawn(field);
+            return "Bola keluar lapangan. Bola di-respawn ke tengah lapangan.";
+        }
     }
-
-    //memeriksa apakah bola keluar dari batas lapangan
-    if (field.isOutOfBounds(posisiBola)) {
-        //Mengembalikan bola ke tengah lapangan jika keluar batas
-        respawn(field);
-        return "Bola keluar lapangan. Bola di-respawn ke tengah lapangan.";
-    }
-
-    //mengurangi kecepatan bola satu tingkat setiap tick
-    --kecepatanBola;
-
-    //menghentikan bola jika kecepatannya sudah habis
-    if (kecepatanBola <= 0) {
-        kecepatanBola = 0;
-        moving = false;
-    }
-
-    //mengembalikan status pergerakan dan sisa kecepatan bola
+    --kecepatanBola;                                           // melambat 1 m/tick
+    if (kecepatanBola <= 0) { kecepatanBola = 0; moving = false; }
     return "Bola bergerak. Kecepatan tersisa: " + std::to_string(kecepatanBola) + ".";
 }
-
 void Ball::respawn(const Field& field) {
     //mengembalikan posisi bola ke tengah lapangan
-    posisiBola = field.getTengahLapangan();
+    posisiBola = field.snap(field.getTengahLapangan()); //dibulatkan ke pusat petak
     arahGerak = {0.0, 0.0};
     kecepatanBola = 0;
     moving = false;

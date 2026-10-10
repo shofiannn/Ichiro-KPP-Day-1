@@ -1,6 +1,8 @@
 #include "../include/Field.h"
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include "../include/Sensor.h"
 
 Field::Field() {}
 
@@ -33,55 +35,39 @@ bool Field::isOutOfBounds(const Vector2& p) const {
     return false;
 }
 
+Vector2 Field::snap(const Vector2& p) const {
+    const double k = std::floor((p.x - minX) / UKURAN_PETAK);
+    const double b = std::floor((maxY - p.y) / UKURAN_PETAK);
+    return {minX + (k + 0.5) * UKURAN_PETAK, maxY - (b + 0.5) * UKURAN_PETAK};
+}
 //visualisasi
-void Field::render(const Vector2& robot, const Vector2& ball,
+void Field::render(const Vector2& robot, double arah, const Vector2& ball,
                    const std::string& status, int tick) const {
-    //satu karakter mewakili 0,5 meter
-    constexpr int kolom = 18;
-    constexpr int baris = 12;
-
-    //mengubah koordinat x menjadi indeks kolom di lapangan
-    auto keKolom = [&](double x) {
-        int c = static_cast<int>(std::round((x - minX) / lebarLapangan * kolom));
-        if (c < 0) c = 0;
-        if (c > kolom) c = kolom;
-        return c;
+    constexpr int K = 18, B = 12;                              
+    std::vector<std::string> g(B, std::string(K, '.'));    // semua petak kosong '.', kolom ke-K khusus gawang
+    auto taruh = [&](const Vector2& p, char s) {
+        const int c = static_cast<int>(std::floor((p.x - minX) / UKURAN_PETAK));
+        const int r = static_cast<int>(std::floor((maxY - p.y) / UKURAN_PETAK));
+        if (r >= 0 && r < B && c >= 0 && c <= K) g[r][c] = s;
     };
-    //mengubah koordinat y menjadi indeks baris di lapangan
-    auto keBaris = [&](double y) {
-        int r = static_cast<int>(std::round((maxY - y) / panjangLapangan * baris));
-        if (r < 0) r = 0;
-        if (r > baris) r = baris;
-        return r;
-    };
-
-    std::cout << "\n========== TICK " << tick << " ==========\n";
-    std::cout << status << "\n";
-    std::cout << "+";
-    for (int c = 0; c <= kolom; ++c) std::cout << "--";
-    std::cout << "+\n";
-
-    for (int r = 0; r <= baris; ++r) {
-        std::cout << "|";
-        for (int c = 0; c <= kolom; ++c) {
-            char simbol = ' ';
-            // Tandai area gawang di tengah sisi kanan.
-            const double yAtRow = maxY - (static_cast<double>(r) / baris) * panjangLapangan;
-            const bool areaGawang = yAtRow <= getGoalMaxY() && yAtRow >= getGoalMinY();
-
-            if (c == keKolom(robot.x) && r == keBaris(robot.y)) simbol = 'R';
-            if (c == keKolom(ball.x) && r == keBaris(ball.y))
-                simbol = (simbol == 'R') ? '*' : 'B';
-
-            if (c == kolom && areaGawang && simbol == ' ') simbol = '=';
-            std::cout << simbol << " ";
-        }
-        std::cout << "|\n";
+    for (int r = 0; r < B; ++r) {                              // gawang '#'
+        const double y = maxY - (r + 0.5) * UKURAN_PETAK;
+        g[r][K] = (y >= getGoalMinY() && y <= getGoalMaxY()) ? '#' : ' ';
     }
-    std::cout << "+";
-    for (int c = 0; c <= kolom; ++c) std::cout << "--";
-    std::cout << "+\n";
-    std::cout << "R = Robot | B = Bola | * = posisi robot dan bola bertumpuk | = = bukaan gawang\n";
-    std::cout << "Robot (" << robot.x << ", " << robot.y << ")"
+    for (int f = 1; f <= 3; ++f)                               // area pandang '@'
+        for (int l = -f; l <= f; ++l) {
+            const Vector2 q = Sensor::global(robot, arah, f, l);
+            if (isInside(q)) taruh(q, '@');
+        }
+    taruh(ball, 'O');                                         
+    if (isInside(robot)) taruh(robot, 'R');                   
+    std::cout << "\n========== TICK " << tick << " ==========\n" << status << "\n";
+    for (const auto& baris : g) {                             
+        std::string out;
+        for (char ch : baris) { out += ch; out += ' '; }
+        std::cout << out << "\n";
+    }
+    std::cout << "R=Robot @=Area pandang O=Bola .=Kosong #=Gawang\n";
+    std::cout << "Robot (" << robot.x << ", " << robot.y << ") arah " << arah
               << " | Bola (" << ball.x << ", " << ball.y << ")\n";
 }

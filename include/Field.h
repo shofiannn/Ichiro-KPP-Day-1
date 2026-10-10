@@ -38,8 +38,9 @@ public:
     bool isOutOfBounds(const Vector2& posisi) const;
 
     //visualisasi lapangan
-    void render(const Vector2& posisiRobot, const Vector2& posisiBola,
+    void render(const Vector2& posisiRobot, double arahRobot, const Vector2& posisiBola,
                 const std::string& status, int tick) const;
+    Vector2 snap(const Vector2& p) const;
 };
 
 #endif

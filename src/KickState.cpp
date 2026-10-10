@@ -2,19 +2,23 @@
 #include "../include/Striker.h"
 #include "../include/Ball.h"
 #include "../include/Field.h"
-
+#include "../include/InvalidActionException.h"
+#include <cstdlib>
 std::string KickState::getName() const { return "KickState"; }
-
-//menjalankan perilaku striker saat menendang bola
 std::string KickState::execute(Striker& striker, Ball& ball, const Field& field) {
-    (void)striker;
-
-    //menendang bola menuju gawang
-    const Vector2 targetGawang{field.getMaxX() + 1.0, 0.0}; //menentukan target tendangan di luar sisi kanan lapangan pada garis tengah
-    ball.kick(targetGawang); //menendang bola menuju target gawang
-
-    striker.setSudahMenendang(true); //menandai bahwa striker sudah melakukan tendangan
-    striker.changeState(nullptr); //menghapus state aktif karena nullptr menandakan perilaku robot sudah selesai
-
-    return "KickState: bola ditendang menuju gawang!";
+    (void)field;
+    //SYARAT TENDANG: bola harus tepat di 1 dari 3 petak depan robot (lurus / depan-atas / depan-bawah)
+    int maju, samping;
+    Sensor::relatif(striker.getPosisiRobot(), striker.getArahRobot(), ball.getPosisi(), maju, samping);
+    if (maju != 1 || std::abs(samping) > 1) {
+        striker.changeState(new SearchState());
+        throw InvalidActionException("Tendangan ditolak: bola tidak berada di 3 petak depan robot.");
+    }
+    // arah tendangan = arah robot -> bola (lurus, miring atas, atau miring bawah)
+    const Vector2 p = ball.getPosisi(), r = striker.getPosisiRobot();
+    ball.kick({p.x + (p.x - r.x), p.y + (p.y - r.y)});
+    striker.setSudahMenendang(true);
+    striker.lupakanBola();                     
+    striker.changeState(new SearchState());      
+    return "KickState: bola ditendang!";
 }

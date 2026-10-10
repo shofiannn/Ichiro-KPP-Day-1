@@ -15,6 +15,7 @@ private:
     int maksimalTick; //menyimpan jumlah tick maksimal simulasi
     int jedaMilidetik; //menyimpan jeda waktu antar tick dalam milidetik
     bool golTerjadi; //menandai apakah gol sudah terjadi
+    bool ujiRespawn; //mode uji respawn
 
 public:
     explicit Simulator(const Config& config); //membuat simulator berdasarkan konfigurasi yang diberikan

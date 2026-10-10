@@ -1,0 +1,15 @@
+# Lapangan (meter)
+field_width=9
+field_height=6
+goal_width=3
+
+# Koordinat menggunakan titik (0,0) di tengah lapangan.
+# Batas X: -4.5 sampai 4.5; batas Y: -3 sampai 3.
+robot_x=-4.5
+robot_y=-2.0
+ball_x=3.0
+ball_y=-1.0
+
+# Batas tick dan jeda visualisasi antar-tick.
+max_ticks=80
+delay_ms=300

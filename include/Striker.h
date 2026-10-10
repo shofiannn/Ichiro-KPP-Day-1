@@ -12,6 +12,10 @@ private:
     std::unique_ptr<StrikerState> state; //menyimpan state perilaku striker yang sedang aktif
     bool sudahMenendang; //menandai apakah striker sudah melakukan tendangan
     const double jarakTendang = 0.55; //menentukan jarak maksimal striker untuk melakukan tendangan
+    Vector2 memoriBola{0.0, 0.0}; //perkiraan posisi bola terakhir yang dilihat kamera
+    bool adaMemori = false;       //apakah robot sedang ingat posisi bola
+    int jumlahPutar = 0;          //jumlah putaran 90 derajat saat scan
+    int indeksWaypoint = 0;       //titik patroli berikutnya
 
 public:
     Striker(const Vector2& posisiAwalStriker, double arahAwalStriker = 0.0); //membuat striker dengan posisi dan arah hadap awal
@@ -29,6 +33,11 @@ public:
     double getJarakTendang() const; //mengambil jarak tendang striker
     bool hasKicked() const; //memeriksa apakah striker sudah menendang
     void setSudahMenendang(bool nilai); //mengubah status apakah striker sudah menendang
+    bool perbaruiMemori(const Ball& bola); //update memori dari kamera
+    Vector2 getMemoriBola() const;
+    void lupakanBola();           
+    std::string patroli(const Field& field); //scan 360 derajat lalu jalan ke waypoint berikutnya
+    void respawn() override;       //respawn robot + reset state & memori
 };
 
 #endif

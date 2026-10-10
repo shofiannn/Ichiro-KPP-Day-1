@@ -5,7 +5,7 @@
 
 Striker::Striker(const Vector2& posisiAwalStriker, double arahAwalStriker)
     : Robot(posisiAwalStriker, arahAwalStriker), //memanggil konstruktor kelas dasar robot
-      sensor(9.0), //membuat sensor dengan jangkauan 9 meter
+      sensor(), //[UBAH] sensor segitiga, tidak lagi memakai jarak 9 m
       state(std::make_unique<SearchState>()), //mengatur state awal striker menjadi searchstate
       sudahMenendang(false) {}
 
@@ -43,3 +43,32 @@ bool Striker::hasKicked() const { return sudahMenendang; }
 
 //mengubah status tendangan striker
 void Striker::setSudahMenendang(bool nilai) { sudahMenendang = nilai; }
+//[BARU] titik patroli (pusat petak) untuk mencari bola
+static const Vector2 WAYPOINT[] = {{-2.75, 2.25}, {0.25, 2.25}, {3.25, 2.25}, {3.25, 0.25}, {0.25, 0.25},
+                                   {-2.75, 0.25}, {-2.75, -2.25}, {0.25, -2.25}, {3.25, -2.25}};
+bool Striker::perbaruiMemori(const Ball& bola) {
+    if (sensor.melihatBola(posisiRobot, arahRobot, bola)) {
+        memoriBola = sensor.bacaPosisiBola(bola); adaMemori = true; return true;
+    }
+    if (adaMemori) {
+        int m, s; Sensor::relatif(posisiRobot, arahRobot, memoriBola, m, s);
+        if (Sensor::petakTerlihat(m, s)) adaMemori = false;
+    }
+    return adaMemori;
+}
+Vector2 Striker::getMemoriBola() const { return memoriBola; }
+void Striker::lupakanBola() { adaMemori = false; jumlahPutar = 0; }
+std::string Striker::patroli(const Field& field) {
+    if (jumlahPutar < 4) { setArahRobot(arahRobot + 90.0); ++jumlahPutar; return "memutar badan 90 derajat untuk scan."; }
+    const Vector2 tujuan = WAYPOINT[indeksWaypoint];
+    if (samaPetak(posisiRobot, tujuan)) { indeksWaypoint = (indeksWaypoint + 1) % 9; jumlahPutar = 0; return "tiba di waypoint, scan ulang."; }
+    moveToward(tujuan, field);
+    return "berjalan ke waypoint patroli.";
+}
+//RESPAWN STRIKER: posisi (dari Robot) + state kembali SearchState + lupa bola
+void Striker::respawn() {
+    Robot::respawn();
+    changeState(new SearchState());
+    sudahMenendang = false;
+    adaMemori = false; jumlahPutar = 0; indeksWaypoint = 0;
+}

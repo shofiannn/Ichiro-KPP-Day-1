@@ -1,12 +1,21 @@
 #include "../include/Robot.h"
 #include "../include/InvalidActionException.h"
 #include <cmath>
+#include <cstdlib>
 
 //membuat robot dengan posisi awal, arah hadap awal, dan kecepatan awal nol
 Robot::Robot(const Vector2& posisiAwalRobot, double arahAwalRobot)
     : posisiRobot(posisiAwalRobot),
       arahRobot(normalisasiSudut(arahAwalRobot)),
-      kecepatanRobot(0.0) {}
+      kecepatanRobot(0.0),
+      posisiAwal(posisiAwalRobot), //[BARU] simpan titik respawn
+      arahAwal(normalisasiSudut(arahAwalRobot)) {}
+//RESPAWN ROBOT: posisi, arah, kecepatan kembali ke nilai awal
+void Robot::respawn() {
+    posisiRobot = posisiAwal;
+    arahRobot = arahAwal;
+    kecepatanRobot = 0.0;
+}
 
 //mengembalikan posisi robot saat ini
 Vector2 Robot::getPosisiRobot() const { return posisiRobot; }
@@ -36,45 +45,23 @@ void Robot::setKecepatanRobot(double kecepatanBaru) {
 }
 
 //menggerakkan robot menuju target
-void Robot::moveToward(const Vector2& target, const Field& field) {
-    const double jarakTarget = jarak(posisiRobot, target); //menghitung jarak antara posisi robot dan target
-
-    //menghentikan pergerakan jika robot sudah sangat dekat dengan target
-    if (jarakTarget < 0.000001) {
-        kecepatanRobot = 0.0;
-        return;
-    }
-
-    //mengambil jarak maksimal untuk tick ini tanpa melewati target
-    const double jarakMaksimal = std::min(0.5, jarakTarget);
-
-    int jumlahLangkah = static_cast<int>(std::floor(jarakMaksimal / langkahKecil + 1e-9)); //menghitung jumlah langkah
-    double jarakGerak = jumlahLangkah * langkahKecil; //menghitung total jarak
-
-    //jika target berjarak kurang dari 0,1 meter, robot boleh langsung menyentuh target
-    if (jumlahLangkah == 0 && jarakTarget <= 0.5) jarakGerak = jarakTarget; //menggunakan sisa jarak menuju target jika tidak ada langkah penuh
-
-    //menghentikan pergerakan jika jarak gerak tidak positif
-    if (jarakGerak <= 0.0) {
-        kecepatanRobot = 0.0;
-        return;
-    }
-
-    //menghitung vektor arah dari posisi robot menuju target
-    const Vector2 arah = normalisasiVektor({target.x - posisiRobot.x,
-                                             target.y - posisiRobot.y});
-
-    //menghitung posisi baru berdasarkan arah dan jarak gerak
-    const Vector2 posisiBaru{
-        posisiRobot.x + arah.x * jarakGerak, 
-        posisiRobot.y + arah.y * jarakGerak
+void Robot::moveToward(const Vector2& target, const Field& field, const Vector2* halangan) {
+    (void)field;
+    int dx, dy; selisihPetak(posisiRobot, target, dx, dy);           // jarak ke target dalam petak
+    if (dx == 0 && dy == 0) { kecepatanRobot = 0.0; return; }        // sudah sampai
+    bool geserX = std::abs(dx) >= std::abs(dy);                      // pilih sumbu dengan selisih terbesar
+    auto langkah = [&](bool sumbuX) {                                // vektor 1 petak pada sumbu yang dipilih
+        return Vector2{sumbuX ? ((dx > 0) - (dx < 0)) * UKURAN_PETAK : 0.0,
+                       sumbuX ? 0.0 : ((dy > 0) - (dy < 0)) * UKURAN_PETAK};
     };
-
-    //memastikan posisi baru masih berada di dalam lapangan
-    if (!field.isInside(posisiBaru)) {
-        throw InvalidActionException("Robot mencoba bergerak keluar dari lapangan.");
+    Vector2 s = langkah(geserX);
+    Vector2 baru{posisiRobot.x + s.x, posisiRobot.y + s.y};
+    if (halangan && samaPetak(baru, *halangan)) {                    // terhalang bola -> menyamping 1 petak
+        s = geserX ? Vector2{0.0, (posisiRobot.y + UKURAN_PETAK <= field.getMaxY()) ? UKURAN_PETAK : -UKURAN_PETAK}
+                   : Vector2{(dx >= 0 ? UKURAN_PETAK : -UKURAN_PETAK), 0.0};
+        baru = {posisiRobot.x + s.x, posisiRobot.y + s.y};
     }
-
-    posisiRobot = posisiBaru; //memperbarui posisi robot
-    kecepatanRobot = jarakGerak; //menyimpan jarak yang ditempuh
+    arahRobot = normalisasiSudut(sudut({0.0, 0.0}, s));              // hadap ke arah jalan (sudut dari modul math, DRY)
+    posisiRobot = baru;
+    kecepatanRobot = UKURAN_PETAK;                                   // 0,5 m/tick
 }

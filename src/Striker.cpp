@@ -5,7 +5,7 @@
 
 Striker::Striker(const Vector2& posisiAwalStriker, double arahAwalStriker)
     : Robot(posisiAwalStriker, arahAwalStriker), //memanggil konstruktor kelas dasar robot
-      sensor(), //[UBAH] sensor segitiga, tidak lagi memakai jarak 9 m
+      sensor(), //sensor segitiga
       state(std::make_unique<SearchState>()), //mengatur state awal striker menjadi searchstate
       sudahMenendang(false) {}
 
@@ -43,7 +43,6 @@ bool Striker::hasKicked() const { return sudahMenendang; }
 
 //mengubah status tendangan striker
 void Striker::setSudahMenendang(bool nilai) { sudahMenendang = nilai; }
-//[BARU] titik patroli (pusat petak) untuk mencari bola
 static const Vector2 WAYPOINT[] = {{-2.75, 2.25}, {0.25, 2.25}, {3.25, 2.25}, {3.25, 0.25}, {0.25, 0.25},
                                    {-2.75, 0.25}, {-2.75, -2.25}, {0.25, -2.25}, {3.25, -2.25}};
 bool Striker::perbaruiMemori(const Ball& bola) {

@@ -2,38 +2,32 @@
 #define ROBOT_H
 
 #include "Vector2.h"
+#include "Field.h"
 
 class Robot {
 protected:
-    //posisi robot
-    Vector2 posisiRobot;
-
-    //arah robot dalam derajat
-    double arahRobot;
-
-    //kecepatan robot
-    double kecepatanRobot;
+    Vector2 posisiRobot; //posisi robot
+    double arahRobot; //arah robot 
+    double kecepatanRobot; //kecepatan robot
+    const double langkahKecil = 0.1; //jarak setiap langkah robot
 
 public:
-    //constructor
-    Robot(
-        const Vector2& posisiAwalRobot,
-        double arahAwalRobot = 0.0
-    );
+    Robot(const Vector2& posisiAwalRobot, double arahAwalRobot = 0.0);
+    virtual ~Robot() = default; //memungkinkan objek turunan dihancurkan dengan benar melalui pointer robot
 
-    //destructor
-    virtual ~Robot() = default;
+    Vector2 getPosisiRobot() const; //mengambil posisi robot saat ini
+    double getArahRobot() const; //mengambil arah hadap robot saat ini
+    double getKecepatanRobot() const; //mengambil kecepatan robot saat ini
 
-    Vector2 getPosisiRobot() const;
-    double getArahRobot() const;
-    double getKecepatanRobot() const;
+    void setPosisiRobot(const Vector2& posisiBaru); //mengubah posisi robot
+    void setArahRobot(double arahBaru); //mengubah arah hadap robot
+    void setKecepatanRobot(double kecepatanBaru); //mengubah kecepatan robot
 
-    void setPosisiRobot(const Vector2& newPosisiRobot);
-    void setArahRobot(double newArahRobot);
-    void setKecepatanRobot(double newKecepatanRobot);
+    void moveToward(const Vector2& target, const Field& field); //menggerakkan robot menuju bola
 
-    //class turunan bisa membuat function think sendiri
-    virtual void think() = 0;
+    //setiap jenis robot wajib memiliki perilaku think sendiri
+    virtual void think() = 0; //mewajibkan kelas turunan membuat implementasi perilaku robot
+
 };
 
 #endif

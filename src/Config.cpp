@@ -30,6 +30,7 @@ Config Config::loadFromFile(const std::string& namaFile) {
         else if (kunci == "ball_y") angka >> config.posisiAwalBola.y;
         else if (kunci == "max_ticks") angka >> config.maksimalTick;
         else if (kunci == "delay_ms") angka >> config.jedaMilidetik;
+        else if (kunci == "test_respawn") { int v = 0; angka >> v; config.ujiRespawn = (v != 0); } 
     }
     return config;
 }

@@ -13,7 +13,7 @@ struct Config {
     Vector2 posisiAwalBola{2.5, -1.0};
     int maksimalTick = 80;
     int jedaMilidetik = 300;
-
+    bool ujiRespawn = false;
     static Config loadFromFile(const std::string& namaFile);
 };
 

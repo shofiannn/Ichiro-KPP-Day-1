@@ -5,11 +5,14 @@ goal_width=3
 
 # Koordinat menggunakan titik (0,0) di tengah lapangan.
 # Batas X: -4.5 sampai 4.5; batas Y: -3 sampai 3.
-robot_x=-3.5
+robot_x=-2.5
 robot_y=-2.0
-ball_x=3.0
-ball_y=-1.0
+ball_x=5.0
+ball_y=-5.0
 
 # Batas tick dan jeda visualisasi antar-tick.
-max_ticks=80
-delay_ms=300
+max_ticks=400
+delay_ms=150
+
+# 1 = uji respawn (robot & bola dipaksa keluar lapangan di tick 3)
+test_respawn=0

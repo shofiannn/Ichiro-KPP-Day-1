@@ -65,29 +65,16 @@ g++ -std=c++17 -Wall -Wextra -pedantic main.cpp src/Vector2.cpp src/Field.cpp sr
 ./Ichiro_KPP
 ```
 
-### CMake
-
-File `CMakeLists.txt` belum disertakan pada versi proyek ini. Jika diperlukan, buat file tersebut atau gunakan perintah g++ di atas.
-
 ## 4. Menjalankan program dan konfigurasi
 
 Program membaca `config.txt` dari working directory. Contoh konfigurasi:
 
 ```ini
-field_width=9
-field_height=6
-goal_width=3
 robot_x=-3.5
 robot_y=-2.0
 ball_x=2.5
 ball_y=-1.0
-max_ticks=80
-delay_ms=300
 ```
-
-Kunci konfigurasi yang dibaca oleh `Config::loadFromFile` adalah `field_width`, `field_height`, `goal_width`, `robot_x`, `robot_y`, `ball_x`, `ball_y`, `max_ticks`, dan `delay_ms`.
-
-**Catatan implementasi:** saat ini ukuran lapangan dan lebar gawang di `Field.h` masih ditetapkan secara konstan (9 x 6 meter dan 3 meter). Nilai `field_width`, `field_height`, dan `goal_width` yang dibaca dari `config.txt` belum diteruskan ke objek `Field`; karena itu mengubah tiga nilai tersebut di file konfigurasi belum mengubah ukuran lapangan yang ditampilkan atau aturan batas lapangan. Posisi awal robot/bola, batas tick, dan jeda digunakan oleh simulator.
 
 ## 5. Arsitektur OOP
 

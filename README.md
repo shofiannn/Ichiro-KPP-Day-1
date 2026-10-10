@@ -134,5 +134,3 @@ Proyek ini belum menyertakan unit-test otomatis. Skenario berikut adalah pemerik
 ## 8. Pernyataan penggunaan AI
 
 Bantuan AI digunakan dalam proses peninjauan kode dan penyusunan dokumentasi untuk tugas ini, termasuk pemeriksaan pesan kompilasi, perapian README, dan penyusunan diagram kelas berdasarkan struktur source code yang tersedia.
-
-Untuk menjaga transparansi akademik, penulis perlu memastikan pernyataan ini sesuai dengan riwayat pengerjaan sebenarnya. Jika ada fungsi atau file source code yang dibuat dengan menyalin atau mengadaptasi keluaran AI, sebutkan nama file/fungsi tersebut secara spesifik di sini sebelum pengumpulan. Jangan menyatakan seluruh source code ditulis sendiri atau seluruhnya ditulis AI jika hal itu tidak sesuai fakta.

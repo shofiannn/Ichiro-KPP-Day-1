@@ -122,8 +122,6 @@ Simulator memperbarui bola ──► Gol / bola keluar dan respawn / batas tick 
 
 ## 7. Skenario uji manual
 
-Proyek ini belum menyertakan unit-test otomatis. Skenario berikut adalah pemeriksaan manual yang dapat dilakukan saat menjalankan program. Hasil aktual bergantung pada konfigurasi dan posisi awal.
-
 | No. | Skenario | Cara menguji | Hasil yang diharapkan |
 |---|---|---|---|
 | 1 | Kompilasi bersih | Jalankan perintah g++ pada bagian 3 | Kompilasi selesai tanpa error; executable terbentuk. |

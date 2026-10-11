@@ -70,11 +70,18 @@ g++ -std=c++17 -Wall -Wextra -pedantic main.cpp src/Vector2.cpp src/Field.cpp sr
 Program membaca `config.txt` dari working directory. Contoh konfigurasi:
 
 ```ini
+field_width=9
+field_height=6
+goal_width=3
 robot_x=-3.5
 robot_y=-2.0
 ball_x=2.5
 ball_y=-1.0
+max_ticks=80
+delay_ms=300
 ```
+
+Kunci konfigurasi yang dibaca oleh `Config::loadFromFile` adalah `field_width`, `field_height`, `goal_width`, `robot_x`, `robot_y`, `ball_x`, `ball_y`, `max_ticks`, dan `delay_ms`.
 
 ## 5. Arsitektur OOP
 
@@ -128,7 +135,3 @@ Proyek ini belum menyertakan unit-test otomatis. Skenario berikut adalah pemerik
 | 7 | Bola keluar lapangan | Uji lintasan yang tidak melewati bukaan gawang dan keluar batas | Bola di-respawn ke tengah lapangan. |
 | 8 | Batas tick | Atur `max_ticks` ke nilai kecil yang positif | Simulasi berhenti ketika batas tick tercapai jika gol belum terjadi. |
 | 9 | Aksi robot tidak valid | Uji kondisi yang membuat gerakan robot akan melewati batas lapangan | `InvalidActionException` ditangani oleh simulator dan pesan kesalahan ditampilkan. |
-
-## 8. Pernyataan penggunaan AI
-
-Bantuan AI digunakan dalam proses peninjauan kode dan penyusunan dokumentasi untuk tugas ini, termasuk pemeriksaan pesan kompilasi, perapian README, dan penyusunan diagram kelas berdasarkan struktur source code yang tersedia.
